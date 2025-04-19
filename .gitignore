@@ -1,0 +1,9 @@
+# env
+.env
+
+# Data Base
+./redis
+./mariadb
+
+# Nextcloud
+./nextcloud
