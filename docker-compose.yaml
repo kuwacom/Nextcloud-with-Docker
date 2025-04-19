@@ -27,6 +27,21 @@ services:
     networks:
       - nextcloud_network
 
+  nextcloud-cron:
+    image: nextcloud:${NEXTCLOUD_VERSION}
+    container_name: nextcloud_cron
+    restart: always
+    entrypoint: /cron.sh
+    depends_on:
+      - nextcloud
+    volumes:
+      - ./nextcloud/data:/var/www/html/data
+      - ./nextcloud/config:/var/www/html/config
+      - ./nextcloud/themes:/var/www/html/themes
+      - ./nextcloud/custom_apps:/var/www/html/custom_apps
+    networks:
+      - nextcloud_network
+
   db:
     image: mariadb:11.4
     container_name: nextcloud_db
@@ -51,18 +66,18 @@ services:
     networks:
       - nextcloud_network
 
-  cloudflared:
-    image: cloudflare/cloudflared
-    command:
-      - tunnel
-      - --no-autoupdate
-      - run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
-      - TUNNEL_TRANSPORT_PROTOCOL=http2
-    restart: always
-    networks:
-      - nextcloud_network
+  # cloudflared:
+  #   image: cloudflare/cloudflared
+  #   command:
+  #     - tunnel
+  #     - --no-autoupdate
+  #     - run
+  #   environment:
+  #     - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+  #     - TUNNEL_TRANSPORT_PROTOCOL=http2
+  #   restart: always
+  #   networks:
+  #     - nextcloud_network
 
 networks:
   nextcloud_network:
