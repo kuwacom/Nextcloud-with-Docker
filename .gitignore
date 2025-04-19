@@ -2,8 +2,8 @@
 .env
 
 # Data Base
-./redis
-./mariadb
+redis
+mariadb
 
 # Nextcloud
-./nextcloud
+nextcloud
