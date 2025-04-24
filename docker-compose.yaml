@@ -19,6 +19,7 @@ services:
       - NEXTCLOUD_DEFAULT_LANGUAGE=${DEFAULT_LANGUAGE}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - PHP_MEMORY_LIMIT=1024M
     volumes:
       - nextcloud:/var/www/html # Nextcloudの生成データ
       - ./nextcloud/data:/var/www/html/data # ユーザーデータ(別HDD等に設置するとよい)
@@ -35,6 +36,8 @@ services:
     entrypoint: /cron.sh
     depends_on:
       - nextcloud
+    environment:
+      - PHP_MEMORY_LIMIT=1024M
     volumes:
       - nextcloud:/var/www/html # Nextcloudのデータ
       - ./nextcloud/data:/var/www/html/data
