@@ -61,5 +61,37 @@ Cloudflare Tunnel を利用することで、外部ネットワークから安�
 
 設定完了後、Cloudflare Tunnel が正しく動作するか確認してください
 
+## リバースプロキシ下でリモートIPを正しく反映させる
+nginxやCloudFlare Tunnel下でNextCloudを利用する際、デフォルトの設定だと送信元IP(リモートIP)が取得できずに、リバースプロキシの立っているマシンやインスタンスのIPになってしまいます
+
+この状態だとブルートフォースの制限やログ等が正常に行われずセキュリティ的にもよろしくないため、NextCloudのconfigを変更する必要があります
+
+### 設定方法
+まずは、事前に本docker composeを使ってNextCloudの構築を済ませてください
+
+その後 `nextcloud/config/config.php` の `$CONFIG = array(` 内の一番下に以下の設定を追加しましょう
+
+```php
+  'trusted_proxies' =>
+  array(
+    0 => '127.0.0.1',
+  ),
+  'forwarded_for_headers' =>
+  array(
+    0 => 'HTTP_CF_CONNECTING_IP',
+    1 => 'HTTP_X_FORWARDED_FOR',
+  ),
+```
+
+この設定では、`127.0.0.1`からのアクセスをプロキシとして信頼し、リバースプロキシ前のリモートIPが記述してあるヘッダーを指定しています
+
+`forwarded_for_headers`に関しては、利用するリバースプロキシによっては違うこともありますので、事前に確認をしてください
+
+### 確認方法
+ブラウザでNextCloudにログイン後、管理者設定 > セキュリティ の順にて確認可能です  
+以下に自分の接続してるグローバルIPもしくはローカルIPが表示されていれば成功です！
+
+![ipの表示](images/setting1.png)
+
 ---
 以上！このドキュメントを参考にして、Docker Compose + Cloudflare Tunnel を活用した Nextcloud を楽しみましょう！
