@@ -128,3 +128,23 @@ sudo bash delete.sh
 ```bash
 sudo bash upgrade-nextcloud.sh
 ```
+
+## バインドマウントしているNextCloudファイル類で権限エラーが出た時
+docker の仕様上、バインドマウントしているフォルダやファイルは、基本的にホスト側の権限が利用されます
+
+この場合、`www-data`等のNextCloudのシステムユーザー以外になった場合に`update-htaccess.sh`等が動作しなくなってしまいます
+
+この場合は、ホスト側のファイルユーザーで実行してあげるとうまくいくことがあります  
+プラスして、そのコマンドで書き換わるファイルもホスト側ユーザーにする必要があります
+
+今回はhtaccessをアップデートする`maintenance:update:htaccess`コマンドを例にとってみます
+
+まず、最初に変更されるファイルの所有者やグループをホスト側に合わせます
+その後、コマンドを実行することで上手く反映されます
+```bash
+docker exec nextcloud_app chown 1000:1000 /var/www/html/.htaccess
+docker exec -u 1000 nextcloud_app php /var/www/html/occ maintenance:update:htaccess
+```
+
+これはアップデート等でも同じです  
+バインドマウントをする以上仕方ないことですので、どうにかしましょう
