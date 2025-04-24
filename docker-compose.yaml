@@ -79,8 +79,7 @@ services:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
       - TUNNEL_TRANSPORT_PROTOCOL=http2
     restart: always
-    networks:
-      - nextcloud_network
+    network_mode: service:nextcloud
 
 networks:
   nextcloud_network:
