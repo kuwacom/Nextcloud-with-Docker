@@ -84,6 +84,8 @@ nginxやCloudFlare Tunnel下でNextCloudを利用する際、デフォルトの�
 
 この設定では、`127.0.0.1`からのアクセスをプロキシとして信頼し、リバースプロキシ前のリモートIPが記述してあるヘッダーを指定しています
 
+> `docker-compose.yaml`内で、CloudFlareTunnelのサービスのネットワーク設定を`network_mode: service:nextcloud`として、NextCloudのサービス内と一体化させているため、CloudFlareのTunnel設定では宛先を`localhost`にして接続することが可能です
+
 `forwarded_for_headers`に関しては、利用するリバースプロキシによっては違うこともありますので、事前に確認をしてください
 
 ### 確認方法
