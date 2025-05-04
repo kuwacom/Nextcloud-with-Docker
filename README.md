@@ -150,3 +150,12 @@ docker exec -u 1000 nextcloud_app php /var/www/html/occ maintenance:update:htacc
 
 これはアップデート等でも同じです  
 バインドマウントをする以上仕方ないことですので、どうにかしましょう
+
+## ホスト側にバインドしているNextCloudのファイル類の権限が上書されてしまったとき
+バックアップからファイルを復旧した時や、WindwosのWSL内でこのコンテナを起動してファイルをバインドすると、まれにNextCloudの設定ファイルや構成ファイル類の権限や所有者がリセットされてしまい、正常に動作しなくなる場合があります  
+こういう時は、`reset-permissions.sh`を利用して権限を修正しましょう！
+
+root権限で実行するだけで権限や所有者が所定の値に戻ります  
+```bash
+sudo bash ./reset-permissions.sh
+```
