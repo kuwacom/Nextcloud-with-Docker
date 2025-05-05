@@ -73,6 +73,17 @@ NextCloudでは、通常の外部公開をする場合Nginx等を利用して、
   server_name         localhost example.com; # アクセスするドメイン名を指定
 ```
 
+リクエスト宛先として、NextCloudのサーバーを指定する必要があります  
+ここには、`.env`で指定したNextCloudをホストに公開しているポートを設定してください  
+デフォルトの場合ポート80なので、ポートを指定せず`http://localhost`で問題ありません
+
+```conf
+location / {
+    proxy_pass         http://localhost; # .envで指定したNextCloudの公開ポートを指定
+    ...
+    }
+```
+
 ### 2. 証明書を配置
 `nginx/certs`フォルダを作成し、秘密鍵`privkey.pem`とサーバー証明書と中間証明書を統合した`fullchain.pem`を設置してください
 
@@ -97,7 +108,6 @@ NginxやCloudFlare Tunnel下でNextCloudを利用する際、デフォルトの�
   'trusted_proxies' =>
   array(
     0 => '127.0.0.1',
-    1 => '172.30.255.253',
   ),
   'forwarded_for_headers' =>
   array(
@@ -106,13 +116,13 @@ NginxやCloudFlare Tunnel下でNextCloudを利用する際、デフォルトの�
   ),
 ```
 
-この設定では、`127.0.0.1`と`172.30.255.253`からのアクセスをプロキシとして信頼し、リバースプロキシ前のリモートIPが記述してあるヘッダーを指定しています
+この設定では、`127.0.0.1`(内部)からのアクセスをプロキシとして信頼し、リバースプロキシ前のリモートIPが記述してあるヘッダーを指定しています
 
 > `docker-compose.yaml`内で、CloudFlareTunnelのサービスのネットワーク設定を`network_mode: service:nextcloud`として、NextCloudのサービス内と一体化させているため、CloudFlareのTunnel設定では宛先を`localhost`にして接続することが可能です
 
-> **⚠️注意⚠️**  
-**[Nginxを使ってローカル経由でhttps接続する](#%EF%B8%8F-nginxを使ってローカル経由でhttps接続する)場合は、NginxサービスのコンテナIPアドレスも記述する必要があります**  
-**デフォルトから変更していない場合は、例のままで問題ありません**
+
+> [Nginxを使ってローカル経由でhttps接続する](#%EF%B8%8F-nginxを使ってローカル経由でhttps接続する)場合は、Nginxがリクエスト元リモートIPを正しく取得するために、ホスト側ネットワークを直接利用してリッスンする必要があります  
+そのため、NginxからのNextCloudへ向けたリクエストは、内部からのリクエスト(`127.0.0.1`)となるため、例のままで問題ありません
 
 `forwarded_for_headers`に関しては、利用するリバースプロキシによっては違うこともありますので、事前に確認をしてください
 
