@@ -84,9 +84,30 @@ services:
     restart: always
     network_mode: service:nextcloud
 
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nextcloud_nginx
+    restart: always
+    ports:
+      - "${HTTPS_PORT}:443"
+    depends_on:
+      - nextcloud
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # 署名証明書を配置
+      - ./nginx/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+      - ./nginx/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+    networks:
+      nextcloud_network:
+        ipv4_address: 172.30.255.253
+
 networks:
   nextcloud_network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.255.0/24
+          gateway: 172.30.255.254
 
 volumes:
   nextcloud:
