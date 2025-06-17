@@ -88,8 +88,6 @@ services:
     image: nginx:stable-alpine
     container_name: nextcloud_nginx
     restart: always
-    ports:
-      - "${HTTPS_PORT}:443"
     depends_on:
       - nextcloud
     volumes:
